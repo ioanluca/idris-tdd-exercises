@@ -1,0 +1,53 @@
+; This program prints its command-line arguments to stdout if they are prime
+(module
+
+  ($argv (global $Sys $argv))
+
+  ($argc (length $argv))
+
+  (rec ($f (lambda ($n $d) (
+          if (== $d 1)
+          1
+          (if (== 0 (% $n $d)) 0 (apply $f $n (- $d 1)))
+  ))))
+
+  ($isPrime (lambda ($x) (
+      let 
+        ($r (- $x 1))
+        (
+            if (<= 1 $x)
+            1
+            (apply $f $x $r)
+        )
+  ))) 
+
+  ($stringToInt (lambda ($s) (
+      apply (global $Pervasives $int_of_string) $s
+  )))
+
+  ($intToString (lambda ($s) (
+      apply (global $Pervasives $string_of_int) $s
+  )))
+
+  (rec
+    ($argv_to_list (lambda ($i)
+      (if (== $i $argc)
+        0
+        (let 
+            ($x (load $argv $i))
+            ($y (apply $stringToInt $x))
+            (
+                if (apply $isPrime $y)
+                (block (tag 0) $x (apply $argv_to_list (+ $i 1)))
+                (apply $argv_to_list (+ $i 1))
+            )
+        )
+          ))))
+  ($argv_list (apply $argv_to_list 1)) 
+
+
+  ($print (lambda ($s)
+    (apply (global $Pervasives $print_endline) $s)))
+  (_ (apply (global $List $iter) $print $argv_list))
+
+  (export))
