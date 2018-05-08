@@ -11,11 +11,16 @@
           (if (== 0 (% $n $d)) 0 (apply $f $n (- $d 1)))
   ))))
 
-  ($isPrime (lambda ($x) (
+  ($abs (lambda ($x) (
+      if (< $x 0) (neg $x) $x 
+  )))
+
+  ($isPrime (lambda ($xx) (
       let 
+        ($x (apply $abs $xx))
         ($r (- $x 1))
         (
-            if (<= 1 $x)
+            if (== $x 1)
             1
             (apply $f $x $r)
         )
